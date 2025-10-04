@@ -1,0 +1,17 @@
+﻿{
+  "expo": {
+    "name": "EcoHome Manager",
+    "slug": "eco-home-manager",
+    "scheme": "ecomanager",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "sdkVersion": "51.0.0",
+    "platforms": ["ios", "android", "web"],
+    "jsEngine": "hermes",
+    "extra": {
+      "eas": { "projectId": "REPLACE_ME" },
+      "EXPO_PUBLIC_API_URL": "http://localhost:3000/api",
+      "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_REPLACE"
+    }
+  }
+}
