@@ -1,20 +1,21 @@
-﻿import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 import prisma from "@/lib/prisma";
 import { ensureValidToken } from "@/lib/tokenRefresh";
 import { tuyaRequest } from "@/lib/tuya";
+import { getOrCreateAppUser } from "@/lib/auth";
 
-// Lista dispositivos do usuário autenticado via Tuya
+// Lista dispositivos do usu?rio autenticado via Tuya
 export async function GET() {
   const { userId } = auth();
 
   if (!userId) {
-    return new Response("Não autenticado", { status: 401 });
+    return new Response("N?o autenticado", { status: 401 });
   }
 
-  const dbUser = await prisma.user.findUnique({ where: { clerkUserId: userId } });
+  const dbUser = await getOrCreateAppUser();
 
   if (!dbUser) {
-    return new Response("Usuário não encontrado", { status: 404 });
+    return new Response("Usu?rio n?o encontrado", { status: 404 });
   }
 
   try {

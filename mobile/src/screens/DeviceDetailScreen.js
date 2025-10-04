@@ -1,34 +1,88 @@
-﻿import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Linking, Alert } from "react-native";
-import api from "../services/api";
+import React, { useCallback, useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
+import * as WebBrowser from "expo-web-browser";
+import Constants from "expo-constants";
+import { useApi } from "../services/api";
+
+const TUYA_BASE_URL =
+  Constants.expoConfig?.extra?.EXPO_PUBLIC_TUYA_BASE_URL ?? process.env.EXPO_PUBLIC_TUYA_BASE_URL;
+const TUYA_CLIENT_ID =
+  Constants.expoConfig?.extra?.EXPO_PUBLIC_TUYA_CLIENT_ID ?? process.env.EXPO_PUBLIC_TUYA_CLIENT_ID;
+const TUYA_REDIRECT_URI =
+  Constants.expoConfig?.extra?.EXPO_PUBLIC_TUYA_REDIRECT_URI ?? process.env.EXPO_PUBLIC_TUYA_REDIRECT_URI;
+const TUYA_AUTHORIZE_URL =
+  Constants.expoConfig?.extra?.EXPO_PUBLIC_TUYA_AUTHORIZE_URL ??
+  `${TUYA_BASE_URL ?? ""}/v1.0/iot-03/authorize`;
+
+function buildTuyaAuthorizeUrl() {
+  if (!TUYA_CLIENT_ID || !TUYA_REDIRECT_URI) {
+    return null;
+  }
+
+  const authBase = TUYA_AUTHORIZE_URL;
+  if (!authBase) {
+    return null;
+  }
+
+  if (authBase.includes("redirect_uri=") && authBase.includes("client_id=")) {
+    return authBase;
+  }
+
+  const params = new URLSearchParams({
+    client_id: TUYA_CLIENT_ID,
+    response_type: "code",
+    redirect_uri: TUYA_REDIRECT_URI,
+    state: String(Date.now()),
+  });
+
+  return `${authBase}?${params.toString()}`;
+}
 
 export default function DeviceDetailScreen({ route, navigation }) {
+  const api = useApi();
   const { id, mode } = route.params || {};
   const [status, setStatus] = useState(null);
 
-  async function fetchStatus() {
+  const fetchStatus = useCallback(async () => {
     if (!id) return;
     try {
       const { data } = await api.get(`/tuya/device/${id}/status`);
       setStatus(data);
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível carregar o status do dispositivo.");
+      Alert.alert("Erro", "N?o foi poss?vel carregar o status do dispositivo.");
     }
-  }
+  }, [api, id]);
 
   useEffect(() => {
     if (id) {
       fetchStatus();
     }
-  }, [id]);
+  }, [id, fetchStatus]);
 
   async function onConnectTuya() {
-    // No fluxo real abra a URL de autorização Tuya/Smart Life
+    const authorizeUrl = buildTuyaAuthorizeUrl();
+    if (!authorizeUrl) {
+      Alert.alert(
+        "Configura??o ausente",
+        "Verifique EXPO_PUBLIC_TUYA_CLIENT_ID, REDIRECT_URI e AUTHORIZE_URL no app.json.",
+      );
+      return;
+    }
+
     try {
-      const url = `${process.env.EXPO_PUBLIC_API_URL?.replace(/\/api$/, "")}/api/tuya/login`; // placeholder
-      await Linking.openURL(url);
+      const result = await WebBrowser.openAuthSessionAsync(authorizeUrl, TUYA_REDIRECT_URI);
+      if (result.type === "success" && result.url) {
+        const { searchParams } = new URL(result.url);
+        const code = searchParams.get("code");
+        if (code) {
+          await api.post("/tuya/login-tuya", { code });
+          Alert.alert("Conta conectada", "Atualize o dashboard para listar seus dispositivos.");
+          navigation.goBack();
+        }
+      }
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível abrir o login Tuya.");
+      console.log("Erro ao abrir login Tuya", error);
+      Alert.alert("Erro", "N?o foi poss?vel abrir o login Tuya.");
     }
   }
 
@@ -37,7 +91,7 @@ export default function DeviceDetailScreen({ route, navigation }) {
       <View style={{ padding: 16 }}>
         <Text style={{ fontSize: 18, fontWeight: "600" }}>Conectar Tuya</Text>
         <Text style={{ marginTop: 8 }}>
-          Toque abaixo para abrir a tela de login do Smart Life (Tuya). Após permitir acesso, volte ao app e recarregue o Dashboard.
+          Toque abaixo para abrir o login Smart Life (Tuya). Ap?s autorizar o acesso, volte ao app e atualize o Dashboard.
         </Text>
         <TouchableOpacity
           style={{
@@ -52,11 +106,9 @@ export default function DeviceDetailScreen({ route, navigation }) {
         </TouchableOpacity>
         <TouchableOpacity
           style={{ marginTop: 16 }}
-          onPress={() => {
-            navigation.goBack();
-          }}
+          onPress={() => navigation.goBack()}
         >
-          <Text style={{ color: "#0ea5e9", textAlign: "center" }}>Já conectei minha conta</Text>
+          <Text style={{ color: "#0ea5e9", textAlign: "center" }}>J? conectei minha conta</Text>
         </TouchableOpacity>
       </View>
     );
@@ -67,9 +119,9 @@ export default function DeviceDetailScreen({ route, navigation }) {
       <Text style={{ fontSize: 18, fontWeight: "600" }}>Status do Dispositivo</Text>
       {status ? (
         <>
-          <Text>Potência atual (W): {String(status.cur_power ?? "-")}</Text>
+          <Text>Pot?ncia atual (W): {String(status.cur_power ?? "-")}</Text>
           <Text>Energia acumulada (kWh): {String(status.add_ele ?? "-")}</Text>
-          <Text>Tensão (V): {String(status.cur_voltage ?? "-")}</Text>
+          <Text>Tens?o (V): {String(status.cur_voltage ?? "-")}</Text>
           <Text>Corrente (A): {String(status.cur_current ?? "-")}</Text>
         </>
       ) : (

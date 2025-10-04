@@ -1,12 +1,18 @@
-﻿import React from "react";
+import React from "react";
 import { ClerkProvider } from "@clerk/clerk-expo";
-import Navigator from "./src/navigation";
+import Constants from "expo-constants";
+import * as WebBrowser from "expo-web-browser";
 import { tokenCache } from "./src/services/auth";
+import Navigator from "./src/navigation";
 
-const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
+WebBrowser.maybeCompleteAuthSession();
+
+const CLERK_PUBLISHABLE_KEY =
+  Constants.expoConfig?.extra?.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ??
+  process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 if (!CLERK_PUBLISHABLE_KEY) {
-  throw new Error("EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY não configurada");
+  throw new Error("EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY n?o configurada");
 }
 
 export default function App() {

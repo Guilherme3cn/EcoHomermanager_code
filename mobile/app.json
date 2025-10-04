@@ -1,17 +1,21 @@
-﻿{
+{
   "expo": {
     "name": "EcoHome Manager",
     "slug": "eco-home-manager",
     "scheme": "ecomanager",
     "version": "1.0.0",
     "orientation": "portrait",
-    "sdkVersion": "51.0.0",
+    "sdkVersion": "54.0.0",
     "platforms": ["ios", "android", "web"],
     "jsEngine": "hermes",
     "extra": {
       "eas": { "projectId": "REPLACE_ME" },
-      "EXPO_PUBLIC_API_URL": "http://localhost:3000/api",
-      "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_REPLACE"
+      "EXPO_PUBLIC_API_URL": "https://eco-home-manager.vercel.app/api",
+      "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY": "pk_test_YXJ0aXN0aWMtcG9ycG9pc2UtOTIuY2xlcmsuYWNjb3VudHMuZGV2JA",
+      "EXPO_PUBLIC_TUYA_BASE_URL": "https://openapi.tuyaus.com",
+      "EXPO_PUBLIC_TUYA_CLIENT_ID": "3jvnwv4hqrqdgewcqfm",
+      "EXPO_PUBLIC_TUYA_REDIRECT_URI": "https://eco-home-manager.vercel.app/api/tuya/login-tuya",
+      "EXPO_PUBLIC_TUYA_AUTHORIZE_URL": "https://app-h5.iot787.com/d/login?client_id=7xnspe4wwukacdvw83xw&redirect_uri=https%3A%2F%2Feco-home-manager.vercel.app%2Fapi%2Ftuya%2Flogin-tuya"
     }
   }
 }

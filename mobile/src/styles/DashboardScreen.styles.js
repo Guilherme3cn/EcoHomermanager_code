@@ -1,4 +1,4 @@
-﻿import { StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import colors from "./colors";
 
 export default StyleSheet.create({
@@ -7,10 +7,21 @@ export default StyleSheet.create({
     padding: 16,
     backgroundColor: colors.background,
   },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
   title: {
     fontSize: 22,
     fontWeight: "700",
-    marginBottom: 12,
+  },
+  logoutButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: "#ef4444",
   },
   connectButton: {
     position: "absolute",

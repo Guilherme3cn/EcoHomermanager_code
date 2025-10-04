@@ -1,4 +1,4 @@
-﻿import { StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import colors from "./colors";
 
 export default StyleSheet.create({
@@ -13,6 +13,12 @@ export default StyleSheet.create({
     fontWeight: "700",
     marginBottom: 16,
     textAlign: "center",
+  },
+  sectionLabel: {
+    textAlign: "center",
+    marginVertical: 12,
+    color: colors.muted,
+    fontSize: 13,
   },
   input: {
     borderWidth: 1,
@@ -30,6 +36,18 @@ export default StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
+    fontWeight: "600",
+  },
+  socialButton: {
+    backgroundColor: "#ffffff",
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    borderRadius: 8,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  socialButtonText: {
+    color: "#111827",
     fontWeight: "600",
   },
   error: {
