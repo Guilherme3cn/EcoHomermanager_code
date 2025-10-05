@@ -1,0 +1,5 @@
+{
+  "name": "eco-homermanager-code",
+  "rootDirectory": "backend",
+  "framework": "nextjs"
+}
